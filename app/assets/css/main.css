@@ -1,0 +1,93 @@
+/* 布景色而非 UI 卡片：暖暗场、纸张、黄铜与木色。字体使用本机宋体，首屏无远程字体依赖。 */
+:root {
+  --font-serif: 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'STSong', 'SimSun', Georgia, serif;
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  color: #e9e1cd;
+  background: #24251f;
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+button, a { touch-action: manipulation; }
+button { font: inherit; }
+a { color: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid #bc9656; outline-offset: 5px; }
+p, h1, h2 { margin: 0; }
+::selection { background: #bca57555; }
+.curtain-is-blocking { overflow: hidden; }
+
+.reading-room {
+  position: relative;
+  min-height: 100svh;
+  padding: 0 clamp(24px, 7vw, 110px);
+  overflow: clip;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 38%, #8e805229, transparent 57%),
+    linear-gradient(90deg, #151a1666, transparent 22%, transparent 78%, #151a1666),
+    #24251f;
+}
+
+.reading-room::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: min(780px, 84vw);
+  height: 1050px;
+  left: 50%;
+  top: 105px;
+  transform: translateX(-50%);
+  border: 1px solid #cabd8d12;
+  border-radius: 400px 400px 0 0;
+  background: linear-gradient(180deg, #b1a16a07, #b1a16a02);
+  pointer-events: none;
+}
+
+.room-header { display: flex; align-items: center; justify-content: space-between; width: min(1150px, 100%); min-height: 84px; margin-inline: auto; border-bottom: 1px solid #d6c69a21; gap: 20px; }
+.wordmark { display: inline-flex; align-items: center; gap: 12px; font: 17px var(--font-serif); letter-spacing: .12em; text-decoration: none; }
+.wordmark small { display: block; font: 7px var(--font-sans); letter-spacing: .2em; color: #acae98; margin-top: 7px; }
+.wordmark-seal { display: grid; place-items: center; width: 31px; height: 35px; border: 1px solid #bca575; color: #d8c296; font-size: 20px; }
+.replay-button { display: flex; align-items: center; gap: 8px; color: #c1c0a9; background: none; border: 0; cursor: pointer; font-size: 11px; padding: 12px 0 12px 12px; white-space: nowrap; }
+.replay-button > span { font-size: 17px; }
+.replay-button:hover { color: #f2e5c2; }
+
+.library-stage { max-width: 1060px; margin: auto; padding: 28px 0 0; }
+.room-introduction { text-align: center; }
+.eyebrow { display: flex; align-items: center; justify-content: center; gap: 12px; color: #b8ab86; font-size: 9px; letter-spacing: .24em; }
+.eyebrow > span { width: 20px; height: 1px; background: #a9956466; }
+.room-introduction h1 { margin: 12px 0 10px; font: 400 clamp(24px, 2.6vw, 32px)/1.5 var(--font-serif); letter-spacing: .1em; text-wrap: balance; }
+.room-introduction h1:focus { outline: none; }
+.room-description { font: 12px/1.9 var(--font-serif); color: #b0b19d; letter-spacing: .08em; }
+.room-description > span { margin-left: .5em; }
+.shelf-instruction { display: flex; align-items: center; justify-content: center; gap: 9px; margin: 10px 0 24px; font-size: 10px; color: #b4b39b; letter-spacing: .12em; }
+.shelf-instruction > span { font-size: 16px; color: #c9b17b; }
+.room-footer { display: flex; justify-content: space-between; gap: 16px; max-width: 1150px; padding: 18px 0 20px; margin: 0 auto; border-top: 1px solid #d6c69a21; color: #9d9f8a; font: 10px/1.8 var(--font-serif); letter-spacing: .1em; }
+
+@media (min-height: 1050px) and (min-width: 900px) {
+  .library-stage { padding-top: 55px; }
+  .room-introduction h1 { margin-block: 24px 16px; }
+  .shelf-instruction { margin-bottom: 42px; }
+}
+
+@media (max-width: 600px) {
+  .reading-room { padding-inline: 22px; }
+  .room-header { min-height: 89px; gap: 10px; }
+  .wordmark { gap: 9px; font-size: 14px; }
+  .wordmark-seal { width: 26px; height: 30px; font-size: 17px; }
+  .wordmark small { font-size: 6px; letter-spacing: .12em; }
+  .replay-button { font-size: 10px; gap: 5px; }
+  .library-stage { padding-top: 28px; }
+  .room-introduction h1 { font-size: clamp(21px, 5.6vw, 30px); letter-spacing: .03em; margin-top: 15px; }
+  .room-description { font-size: 11px; }
+  .room-description > span { display: block; margin-left: 0; }
+  .room-footer { font-size: 9px; gap: 10px; }
+  .shelf-instruction { margin-bottom: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
