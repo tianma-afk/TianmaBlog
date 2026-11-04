@@ -51,9 +51,9 @@ p, h1, h2 { margin: 0; }
 .wordmark { display: inline-flex; align-items: center; gap: 12px; font: 17px var(--font-serif); letter-spacing: .12em; text-decoration: none; }
 .wordmark small { display: block; font: 7px var(--font-sans); letter-spacing: .2em; color: #acae98; margin-top: 7px; }
 .wordmark-seal { display: grid; place-items: center; width: 31px; height: 35px; border: 1px solid #bca575; color: #d8c296; font-size: 20px; }
-.replay-button { display: flex; align-items: center; gap: 8px; color: #c1c0a9; background: none; border: 0; cursor: pointer; font-size: 11px; padding: 12px 0 12px 12px; white-space: nowrap; }
-.replay-button > span { font-size: 17px; }
-.replay-button:hover { color: #f2e5c2; }
+.exit-button { display: flex; align-items: center; gap: 8px; color: #c1c0a9; background: none; border: 0; cursor: pointer; font-size: 11px; padding: 12px 0 12px 12px; white-space: nowrap; }
+.exit-button > svg { width: 17px; height: 17px; flex-shrink: 0; }
+.exit-button:hover { color: #f2e5c2; }
 
 .library-stage { max-width: 1060px; margin: auto; padding: 28px 0 0; }
 .room-introduction { text-align: center; }
@@ -79,7 +79,7 @@ p, h1, h2 { margin: 0; }
   .wordmark { gap: 9px; font-size: 14px; }
   .wordmark-seal { width: 26px; height: 30px; font-size: 17px; }
   .wordmark small { font-size: 6px; letter-spacing: .12em; }
-  .replay-button { font-size: 10px; gap: 5px; }
+  .exit-button { font-size: 10px; gap: 5px; }
   .library-stage { padding-top: 28px; }
   .room-introduction h1 { font-size: clamp(21px, 5.6vw, 30px); letter-spacing: .03em; margin-top: 15px; }
   .room-description { font-size: 11px; }

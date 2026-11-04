@@ -5,7 +5,7 @@ const STORAGE_KEY = 'tianma:curtain-seen:v1'
 const enteredThisVisit = useState('entered-reading-room', () => false)
 const phase = ref<CurtainPhase>('checking')
 const roomTitle = useTemplateRef('roomTitle')
-const isBlocking = computed(() => phase.value === 'closed' || phase.value === 'opening')
+const isBlocking = computed(() => ['closed', 'opening', 'closing'].includes(phase.value))
 let openingTimer: ReturnType<typeof setTimeout> | undefined
 
 useHead({
@@ -48,8 +48,19 @@ function enterRoom(skipAnimation = false) {
   openingTimer = setTimeout(() => { void finishOpening() }, 2050)
 }
 
-function replayCurtain() {
-  phase.value = 'closed'
+function exitRoom() {
+  if (phase.value !== 'open') return
+  enteredThisVisit.value = false
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // 退出不依赖本地存储权限。
+  }
+  phase.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'closed' : 'closing'
+}
+
+function finishClosing() {
+  if (phase.value === 'closing') phase.value = 'closed'
 }
 
 onBeforeUnmount(() => {
@@ -65,8 +76,12 @@ onBeforeUnmount(() => {
         <span class="wordmark-seal" aria-hidden="true">天</span>
         <span>天马的书房<small>TIANMA’S READING ROOM</small></span>
       </NuxtLink>
-      <button class="replay-button" type="button" @click="replayCurtain">
-        <span aria-hidden="true">↻</span> 重看启幕
+      <button class="exit-button" type="button" @click="exitRoom">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <path d="m16 17 5-5-5-5M21 12H9" />
+        </svg>
+        <span>退出</span>
       </button>
     </header>
 
@@ -88,5 +103,5 @@ onBeforeUnmount(() => {
     </footer>
   </div>
 
-  <CurtainIntro :phase="phase" @enter="enterRoom" />
+  <CurtainIntro :phase="phase" @enter="enterRoom" @closed="finishClosing" />
 </template>

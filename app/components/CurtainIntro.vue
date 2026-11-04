@@ -1,29 +1,35 @@
 <script setup lang="ts">
-export type CurtainPhase = 'checking' | 'closed' | 'opening' | 'open'
+export type CurtainPhase = 'checking' | 'closed' | 'opening' | 'open' | 'closing'
 
 const props = defineProps<{ phase: CurtainPhase }>()
-const emit = defineEmits<{ enter: [skipAnimation: boolean] }>()
-const invitation = useTemplateRef('invitation')
-const enterButton = useTemplateRef('enterButton')
+const emit = defineEmits<{ enter: [skipAnimation: boolean], closed: [] }>()
+const entrance = useTemplateRef('entrance')
+const closedPanels = new Set<EventTarget>()
+
+function focusEntrance() {
+  entrance.value?.focus({ preventScroll: true })
+}
 
 watch(() => props.phase, async (phase) => {
+  if (phase === 'closing') closedPanels.clear()
   if (phase === 'closed') {
     await nextTick()
-    enterButton.value?.focus({ preventScroll: true })
+    focusEntrance()
   }
 }, { flush: 'post' })
 
-function trapFocus(event: KeyboardEvent) {
-  const buttons = invitation.value?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')
-  if (!buttons?.length) return
-  const first = buttons[0]
-  const last = buttons[buttons.length - 1]
-  if (event.shiftKey && document.activeElement === first) {
-    event.preventDefault()
-    last?.focus()
-  } else if (!event.shiftKey && document.activeElement === last) {
-    event.preventDefault()
-    first?.focus()
+function trackClosedPanel(event: TransitionEvent) {
+  if (props.phase !== 'closing' || event.propertyName !== 'transform' || !event.currentTarget) return
+  closedPanels.add(event.currentTarget)
+  // 以两侧的真实动画完成事件为准，不能提前显示开场文字。
+  if (closedPanels.size === 2) emit('closed')
+}
+
+function handleReducedMotion(event: TransitionEvent) {
+  // 合拢途中切换系统动态效果偏好时，CSS 会取消动画，不能卡在 closing。
+  if (props.phase === 'closing' && event.propertyName === 'transform'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    emit('closed')
   }
 }
 </script>
@@ -34,48 +40,54 @@ function trapFocus(event: KeyboardEvent) {
     :data-phase="phase"
     :aria-hidden="phase === 'open' || phase === 'checking' ? true : undefined"
   >
-    <div class="curtain-panel curtain-panel--left" aria-hidden="true" />
-    <div class="curtain-panel curtain-panel--right" aria-hidden="true" />
+    <div
+      class="curtain-panel curtain-panel--left"
+      aria-hidden="true"
+      @transitionend.self="trackClosedPanel"
+      @transitioncancel.self="handleReducedMotion"
+    />
+    <div
+      class="curtain-panel curtain-panel--right"
+      aria-hidden="true"
+      @transitionend.self="trackClosedPanel"
+      @transitioncancel.self="handleReducedMotion"
+    />
     <div class="curtain-pelmet" aria-hidden="true" />
 
     <div
       v-if="phase === 'closed' || phase === 'opening'"
-      ref="invitation"
-      class="curtain-invitation"
+      class="curtain-dialog"
       role="dialog"
       aria-modal="true"
       aria-labelledby="curtain-title"
-      aria-describedby="curtain-description"
       :aria-busy="phase === 'opening'"
-      @keydown.tab="trapFocus"
+      @keydown.tab.prevent="focusEntrance"
       @keydown.esc.prevent="emit('enter', true)"
     >
-      <span class="invitation-eyebrow">A LITTLE THEATRE OF WORDS</span>
-      <span class="invitation-rule" aria-hidden="true" />
-      <p class="invitation-owner">天马的书房</p>
-      <h2 id="curtain-title">每一本书，<br>都是一扇门。</h2>
-      <p id="curtain-description">幕布之后，有一些故事等你翻开。</p>
+      <!-- 整幅幕布是无按钮外观的入口，保留原生键盘与读屏操作。 -->
       <button
-        ref="enterButton"
-        class="enter-button"
+        ref="entrance"
+        class="curtain-invitation"
         type="button"
+        aria-label="拉开幕布，进入书房"
         :disabled="phase === 'opening'"
         @click="emit('enter', false)"
       >
-        <span>启 幕</span><span aria-hidden="true">↗</span>
+        <span id="curtain-title" class="curtain-title" lang="en">Life is a play</span>
       </button>
-      <button
-        class="skip-button"
-        type="button"
-        :disabled="phase === 'opening'"
-        @click="emit('enter', true)"
-      >跳过动画，直接入内 <span aria-hidden="true">→</span></button>
-      <span class="invitation-footnote">请随意翻阅 · 不必匆忙</span>
     </div>
   </div>
 </template>
 
 <style scoped>
+@font-face {
+  font-family: 'Pinyon Script';
+  src: url('/fonts/pinyon-script/pinyon-script-latin-400-normal.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 .theatre-curtain {
   position: fixed;
   inset: 0;
@@ -118,64 +130,44 @@ function trapFocus(event: KeyboardEvent) {
   box-shadow: 0 7px 20px #10080566;
 }
 
+.curtain-dialog, .curtain-invitation { position: absolute; inset: 0; }
+
 .curtain-invitation {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  color: #f4e9d5;
-  text-align: center;
-  text-shadow: 0 2px 15px #2e0c0a44;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 48px 32px;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
   background: radial-gradient(ellipse at 50% 42%, #220b0d05, #220b0d45);
-  transition: opacity .35s, transform .5s;
-}
-
-.invitation-eyebrow, .invitation-footnote {
-  font: 10px var(--font-sans);
-  letter-spacing: .24em;
-  color: #d4b997;
-}
-
-.invitation-rule {
-  width: 36px;
-  height: 1px;
-  margin: 24px 0 30px;
-  background: #d9b87c;
-}
-
-.invitation-owner { font: 15px var(--font-serif); letter-spacing: .3em; }
-
-h2 {
-  margin: 22px 0;
-  font: 400 clamp(38px, 5.2vw, 68px)/1.5 var(--font-serif);
-  letter-spacing: .09em;
-}
-
-#curtain-description { color: #e0c6b4; font-size: 13px; letter-spacing: .12em; line-height: 1.8; }
-
-.enter-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
-  margin-top: 36px;
-  padding: 15px 25px;
-  border: 1px solid #ebd5ab;
-  background: #ebd5ab;
-  color: #4b2226;
-  font: 500 15px var(--font-serif);
+  color: #eddbb7;
   cursor: pointer;
-  text-shadow: none;
-  transition: background .2s, transform .2s;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .5s, transform .7s;
 }
 
-.enter-button:hover { background: #fff0d4; transform: translateY(-2px); }
-.skip-button { margin-top: 18px; padding: 8px; color: #e0c6b4; background: none; border: 0; font-size: 11px; cursor: pointer; }
-.skip-button:hover { color: #fff3df; }
-.invitation-footnote { margin-top: 58px; font-size: 10px; letter-spacing: .18em; }
+.curtain-title {
+  display: block;
+  padding: .15em .2em .3em;
+  font: 400 clamp(56px, 9.5vw, 156px)/1.3 'Pinyon Script', 'Snell Roundhand', 'Edwardian Script ITC', cursive;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  text-shadow: 0 2px 20px #250b0b55, 0 0 45px #e8c77c18;
+  transition: color .3s, text-shadow .3s;
+}
+
+.curtain-invitation:focus-visible { outline: none; }
+.curtain-invitation:focus-visible .curtain-title {
+  color: #fff0cf;
+  text-shadow: 0 2px 20px #250b0b55, 0 0 30px #e8c77c55;
+}
+
+@media (hover: hover) {
+  .curtain-invitation:hover .curtain-title { color: #fff0cf; }
+}
 
 [data-phase='opening'], [data-phase='open'] { pointer-events: none; }
 [data-phase='opening'] .curtain-panel--left, [data-phase='open'] .curtain-panel--left { transform: translateX(-94%); }
@@ -183,14 +175,12 @@ h2 {
 [data-phase='opening'] .curtain-invitation { opacity: 0; transform: translateY(-10px); }
 [data-phase='open'] .curtain-panel { will-change: auto; transition: none; }
 
-@media (max-height: 650px) {
-  h2 { margin: 12px 0; font-size: 34px; }
-  .invitation-rule { margin: 12px 0 16px; }
-  .enter-button { margin-top: 20px; }
-  .invitation-footnote { margin-top: 20px; }
+@media (max-width: 600px) {
+  .curtain-invitation { padding-inline: 16px; }
+  .curtain-title { font-size: clamp(50px, 13.5vw, 80px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .curtain-panel, .curtain-invitation, .enter-button { transition: none; }
+  .curtain-panel, .curtain-invitation, .curtain-title { transition: none; }
 }
 </style>

@@ -23,9 +23,11 @@ npx --yes --package=node@24.15.0 -- node node_modules/nuxt/bin/nuxt.mjs dev
 
 ## 当前功能
 
-- 首次访问展示深红色舞台幕布，点击「启幕」后向两侧拉开。
-- 「跳过动画」直接入内；遵循系统的减少动态效果设置。
-- 本地存储记住启幕状态；后续访问不重复展示，可点击「重看启幕」。
+- 首次访问展示深红色舞台幕布，画面只保留书法艺术字「Life is a play」，点击幕布任意位置后向两侧拉开。
+- 不显示按钮或操作提示；支持 Enter / 空格启幕、Esc 跳过动画，并遵循系统的减少动态效果设置。
+- 英文书法字体 Pinyon Script 随站点本地托管，无第三方字体请求；授权文件见 `docs/licenses/pinyon-script/OFL.txt`。
+- 本地存储记住启幕状态；后续访问不重复展示。右上角「退出」配有门与向外箭头图标。
+- 退出时先合拢两侧幕布，等两侧动画都结束后才恢复「Life is a play」；退出也会清除进入状态，刷新仍停留在开场。
 - 正面三层阶梯书架，简历、博客、小说、日志四本栏目书可点击。
 - 四个独立栏目路由与明确的内容占位，支持直接访问和返回书架。
 - 手机窄屏适配、键盘操作、焦点管理；无 JavaScript 时仍可浏览书架与栏目。
@@ -44,7 +46,7 @@ npx --yes --package=node@24.15.0 -- node node_modules/nuxt/bin/nuxt.mjs dev
 | 栏目占位页 | `app/pages/[section].vue` |
 | 站点标题、描述与 Nuxt 配置 | `nuxt.config.ts` |
 
-首次访问标记为 localStorage 中的 `tianma:curtain-seen:v1`。清除此键可以模拟新访客；只想重看动画时无需清理，点击首页按钮即可。
+首次访问标记为 localStorage 中的 `tianma:curtain-seen:v1`。清除此键可以模拟新访客；也可以直接点击首页右上角「退出」回到幕布，再次点击幕布重新进入。
 
 ## 验证
 
