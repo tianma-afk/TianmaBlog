@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { CurtainPhase } from '~/components/CurtainIntro.vue'
 
-const STORAGE_KEY = 'tianma:curtain-seen:v1'
+const LEGACY_STORAGE_KEY = 'tianma:curtain-seen:v1'
 const enteredThisVisit = useState('entered-reading-room', () => false)
-const phase = ref<CurtainPhase>('checking')
+const phase = ref<CurtainPhase>(enteredThisVisit.value ? 'open' : 'closed')
 const roomTitle = useTemplateRef('roomTitle')
-const isBlocking = computed(() => ['closed', 'opening', 'closing'].includes(phase.value))
+const isMounted = ref(false)
+const isBlocking = computed(() => isMounted.value && phase.value !== 'open')
 let openingTimer: ReturnType<typeof setTimeout> | undefined
 
 useHead({
@@ -14,24 +15,16 @@ useHead({
 })
 
 onMounted(() => {
-  let seenBefore = enteredThisVisit.value
+  isMounted.value = true
   try {
-    seenBefore ||= localStorage.getItem(STORAGE_KEY) === 'true'
-  } catch {
-    // 隐私模式禁止存储时，本次站内浏览仍由 useState 记住状态。
-  }
-  enteredThisVisit.value = seenBefore
-  phase.value = seenBefore ? 'open' : 'closed'
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    localStorage.removeItem('tianma:curtain-seen')
+  } catch {}
 })
 
 async function finishOpening() {
   phase.value = 'open'
   enteredThisVisit.value = true
-  try {
-    localStorage.setItem(STORAGE_KEY, 'true')
-  } catch {
-    // 无本地存储也不能阻止访客进入网站。
-  }
   await nextTick()
   roomTitle.value?.focus({ preventScroll: true })
 }
@@ -52,7 +45,7 @@ function exitRoom() {
   if (phase.value !== 'open') return
   enteredThisVisit.value = false
   try {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
   } catch {
     // 退出不依赖本地存储权限。
   }

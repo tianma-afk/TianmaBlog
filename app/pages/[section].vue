@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { books } from '~/data/library'
 
+const enteredThisVisit = useState('entered-reading-room', () => false)
+enteredThisVisit.value = true
+
 const route = useRoute()
 const book = computed(() => books.find(item => item.slug === route.params.section))
 

@@ -20,7 +20,7 @@ async function expectUnobstructedBooks(page: import('@playwright/test').Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 }
 
-test('幕布只显示艺术字，本地字体可加载且窄屏不溢出', async ({ page }) => {
+test('幕布只显示艺术字，字体瞬间就绪无跳变且窄屏不溢出', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 })
   await page.goto('/')
   const dialog = page.getByRole('dialog', { name: 'Life is a play' })
@@ -31,6 +31,8 @@ test('幕布只显示艺术字，本地字体可加载且窄屏不溢出', async
     return fonts.length > 0 && fonts.every(font => font.status === 'loaded')
   })
   expect(fontLoaded).toBe(true)
+  const fontReadyImmediately = await page.evaluate(() => document.fonts.check('50px "Pinyon Script"'))
+  expect(fontReadyImmediately).toBe(true)
   const title = await page.locator('.curtain-title').boundingBox()
   expect(title).not.toBeNull()
   expect(title!.x).toBeGreaterThanOrEqual(0)
@@ -38,14 +40,21 @@ test('幕布只显示艺术字，本地字体可加载且窄屏不溢出', async
   await page.screenshot({ path: test.info().outputPath('curtain-small.png') })
 })
 
-test('点击幕布空白处启幕、焦点转移，以及刷新后不重复打扰', async ({ page }) => {
+test('直接访问或刷新首页一开始合上幕布，启幕后站内访问书架保持展开，清理旧存储', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   page.on('console', message => {
     if (message.type() === 'warning' && /hydration/i.test(message.text())) errors.push(message.text())
   })
+  // 模拟之前版本留下的 localStorage 标记
+  await page.addInitScript(key => localStorage.setItem(key, 'true'), storageKey)
   await page.goto('/')
-  await expect(page.getByRole('dialog')).toBeVisible()
+  // 即使有旧 storage，直接访问也必须是一开始合上的
+  await expect(page.locator('.theatre-curtain')).toHaveAttribute('data-phase', 'closed')
+  await expect(page.getByRole('dialog', { name: 'Life is a play' })).toBeVisible()
+  // 旧 storage 应该被清除
+  expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBeNull()
+
   const entrance = page.getByRole('button', { name: entranceLabel })
   await expect(entrance).toBeFocused()
   await entrance.click({ position: { x: 24, y: 100 } })
@@ -53,10 +62,11 @@ test('点击幕布空白处启幕、焦点转移，以及刷新后不重复打�
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
   await expectUnobstructedBooks(page)
   await page.screenshot({ path: test.info().outputPath('bookshelf.png'), fullPage: true })
-  expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBe('true')
+
+  // 刷新页面后重新直接访问，一开始依然期望合上
   await page.reload()
-  await expect(page.locator('.theatre-curtain')).toHaveAttribute('data-phase', 'open')
-  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.locator('.theatre-curtain')).toHaveAttribute('data-phase', 'closed')
+  await expect(page.getByRole('dialog', { name: 'Life is a play' })).toBeVisible()
   expect(errors).toEqual([])
 })
 

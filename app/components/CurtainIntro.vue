@@ -10,6 +10,12 @@ function focusEntrance() {
   entrance.value?.focus({ preventScroll: true })
 }
 
+onMounted(() => {
+  if (props.phase === 'closed') {
+    focusEntrance()
+  }
+})
+
 watch(() => props.phase, async (phase) => {
   if (phase === 'closing') closedPanels.clear()
   if (phase === 'closed') {
@@ -80,14 +86,6 @@ function handleReducedMotion(event: TransitionEvent) {
 </template>
 
 <style scoped>
-@font-face {
-  font-family: 'Pinyon Script';
-  src: url('/fonts/pinyon-script/pinyon-script-latin-400-normal.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
 .theatre-curtain {
   position: fixed;
   inset: 0;
@@ -152,7 +150,7 @@ function handleReducedMotion(event: TransitionEvent) {
 .curtain-title {
   display: block;
   padding: .15em .2em .3em;
-  font: 400 clamp(56px, 9.5vw, 156px)/1.3 'Pinyon Script', 'Snell Roundhand', 'Edwardian Script ITC', cursive;
+  font: 400 clamp(56px, 9.5vw, 156px)/1.3 'Pinyon Script', cursive;
   letter-spacing: .01em;
   white-space: nowrap;
   text-shadow: 0 2px 20px #250b0b55, 0 0 45px #e8c77c18;
