@@ -12,7 +12,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "resume:pdf": "npm run build && node scripts/export-resume.mjs",
+    "test:resume-export": "node --test tests/unit/resume-export.test.mjs tests/integration/resume-export.test.mjs"
   },
   "dependencies": {
     "nuxt": "4.6.4",

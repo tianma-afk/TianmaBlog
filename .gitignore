@@ -15,3 +15,6 @@ dist/
 # Browser test artifacts
 playwright-report/
 test-results/
+
+# Private resume identity and application PDFs (never deploy)
+.private/

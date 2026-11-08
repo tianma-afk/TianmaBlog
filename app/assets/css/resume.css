@@ -1,0 +1,100 @@
+/* Layout adapted from Zhilu’s MIT-licensed zhilu-cv. See docs/licenses/zhilu-cv-MIT.txt. */
+/* Inter 4.1, self-hosted under SIL OFL 1.1. See docs/licenses/inter-OFL.txt. */
+@font-face {
+  font-family: InterVariable;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+html.resume-mode { color-scheme: light dark; background: #f7faff; color: #202124; }
+.resume-page {
+  --resume-ink: #202124;
+  --resume-muted: #6a7586;
+  --resume-link: #526ac0;
+  --resume-rule: #e2e5e9;
+  --resume-bar: #eef0f3;
+  min-height: 100svh;
+  padding: 18px 20px 16px;
+  color: var(--resume-ink);
+  background: #f7faff;
+  font-family: InterVariable, 'Noto Sans SC', system-ui, sans-serif;
+  font-size: 14.8px;
+  line-height: 1.4;
+  letter-spacing: .025em;
+  overflow-wrap: anywhere;
+}
+.resume-page *, .resume-page *::before, .resume-page *::after { box-sizing: border-box; }
+.resume-page h1, .resume-page h2, .resume-page h3, .resume-page p, .resume-page ul { margin: 0; }
+.resume-page a { text-decoration: none; color: var(--resume-link); }
+.resume-page a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.resume-page a:focus-visible, .resume-page button:focus-visible { outline: 2px solid var(--resume-link); outline-offset: 4px; border-radius: 2px; }
+.resume-toolbar, .resume-paper, .resume-footer { width: 100%; max-width: calc(19cm + 2rem); margin-inline: auto; }
+.resume-toolbar { min-height: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 8px; font-size: 12px; letter-spacing: 0; color: var(--resume-muted); }
+.resume-toolbar a, .resume-toolbar button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; color: inherit; }
+.resume-toolbar button { border: 0; background: transparent; cursor: pointer; font: inherit; }
+.resume-toolbar button:hover { color: var(--resume-link); }
+.resume-icon { width: 1.2em; height: 1.2em; flex: 0 0 auto; vertical-align: -.2em; }
+.resume-paper { padding: 24px; border-radius: 12px; background: #fff; }
+.resume-header h1 { text-align: center; font-size: 2em; line-height: 1.4; font-weight: 700; letter-spacing: .12em; }
+.resume-position { margin: 5px 0 19px !important; text-align: center; color: var(--resume-muted); font-size: 1em; letter-spacing: .08em; }
+.resume-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+.resume-info ul { list-style: none; padding: 0; min-width: 0; }
+.resume-info li { display: flex; align-items: baseline; gap: 5px; margin: 3px 0; line-height: 1.5; }
+.resume-info li > .resume-icon { align-self: start; margin-top: .22em; }
+.resume-info a[href^='tel:'] { color: inherit; }
+.resume-info .resume-school { margin-top: 0; margin-bottom: 4px; align-items: center; }
+.resume-info .resume-school > .resume-icon { align-self: center; margin-top: 0; }
+.resume-school-logo { display: block; width: auto; max-width: 100%; height: 1lh; object-fit: contain; }
+.resume-info-divider { color: var(--resume-muted); }
+.resume-section { margin-top: 20px; }
+.resume-section > h2 { padding: 0 8px 4px; margin: 0 -8px 9px; border-bottom: 2px solid var(--resume-rule); font-size: 20px; font-weight: 700; line-height: 1.4; letter-spacing: .04em; break-after: avoid; }
+.resume-points { padding-inline-start: 1.05em; }
+.resume-points li { margin: 3px 0; padding-left: .05em; }
+.resume-entry { margin: 12px 0 0; }
+.resume-entry-heading { display: flex; align-items: baseline; gap: 5px 10px; flex-wrap: wrap; background: var(--resume-bar); border-radius: 5px; margin: 0 -8px 5px; padding: 2px 8px; line-height: 1.4; break-after: avoid; }
+.resume-entry-heading h3 { font-family: inherit; font-size: 1em; font-weight: 700; line-height: 1.4; }
+.resume-entry-description { color: var(--resume-muted); font-size: 1em; }
+.resume-entry-role { margin-left: auto; font-size: 1em; }
+.resume-techs { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: 14px; line-height: 20px; letter-spacing: 0; margin-bottom: 4px !important; }
+.resume-techs li { display: inline-flex; gap: 4px; align-items: center; }
+.resume-tech-icon { display: block; flex: 0 0 auto; width: 16px; height: 16px; object-fit: contain; }
+.resume-footer { padding-top: 12px; text-align: center; font-size: 11px; color: var(--resume-muted); letter-spacing: 0; }
+.resume-footer a { color: inherit; }
+@media (max-width: 600px) {
+  .resume-page { padding: 10px 12px 16px; }
+  .resume-paper { padding: 24px 20px; border-radius: 9px; }
+  .resume-info { grid-template-columns: 1fr; gap: 0; }
+  .resume-info li { margin: 5px 0; }
+  .resume-position { margin-bottom: 18px !important; }
+  .resume-section { margin-top: 19px; }
+  .resume-entry-heading { gap: 0 8px; }
+  .resume-entry-description { flex-basis: 100%; order: 1; }
+  .resume-techs { gap: 2px 10px; }
+}
+@media (prefers-color-scheme: dark) {
+  html.resume-mode { background: #151820; color: #e1e5ed; }
+  .resume-page { --resume-ink: #e1e5ed; --resume-muted: #a4afbf; --resume-link: #a2b5ff; --resume-rule: #373e4c; --resume-bar: #2b313e; background: #151820; }
+  .resume-paper { background: #1e222b; }
+  .resume-school-logo { background: #fff; border-radius: 3px; padding: 0 3px; }
+  .resume-tech-icon[data-monochrome] { filter: brightness(0) invert(.9); }
+}
+@page { size: A4; margin: 10mm; }
+@media print {
+  html.resume-mode, html.resume-mode body { background: #fff !important; color: #111 !important; }
+  .resume-page { --resume-ink: #111; --resume-muted: #4d5663; --resume-link: #344f91; --resume-rule: #d9dde2; --resume-bar: #eef0f3; background: #fff; padding: 0; letter-spacing: .025em; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .resume-toolbar, .resume-footer { display: none !important; }
+  .resume-paper { max-width: none; padding: 0 2mm; border-radius: 0; background: #fff; }
+  .resume-position { margin: 3px 0 12px !important; }
+  .resume-info { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .resume-school-logo { background: transparent; padding: 0; border-radius: 0; }
+  .resume-info li { margin: 2px 0; }
+  /* Spread the spare A4 space through content gaps, without changing type or stretching the page. */
+  .resume-section { margin-top: 20px; }
+  .resume-section > h2 { margin-bottom: 6px; padding-bottom: 3px; }
+  .resume-entry { margin-top: 14px; }
+  .resume-entry-heading { flex-wrap: nowrap; }
+  .resume-entry-description { flex-basis: auto; order: initial; }
+  .resume-points li { margin: 3px 0; orphans: 2; widows: 2; }
+  .resume-tech-icon[data-monochrome] { filter: none; }
+}

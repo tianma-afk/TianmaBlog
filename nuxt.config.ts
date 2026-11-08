@@ -1,6 +1,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-04',
   devtools: { enabled: false },
+  runtimeConfig: {
+    public: {
+      siteUrl: '',
+      cvUrl: '',
+    },
+  },
   css: ['~/assets/css/fonts.css', '~/assets/css/main.css'],
   app: {
     head: {

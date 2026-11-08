@@ -1,0 +1,3 @@
+<template>
+  <ResumeDocument />
+</template>

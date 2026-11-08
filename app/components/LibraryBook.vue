@@ -2,11 +2,13 @@
 import type { LibraryBook } from '~/data/library'
 
 defineProps<{ book: LibraryBook }>()
+const { resumeHref } = useSiteLinks()
 </script>
 
 <template>
   <NuxtLink
-    :to="`/${book.slug}`"
+    :to="book.slug === 'resume' ? resumeHref : `/${book.slug}`"
+    :external="book.slug === 'resume' && resumeHref !== '/resume'"
     class="library-book"
     :class="`library-book--${book.color}`"
     :aria-label="`翻开${book.title}：${book.description}`"
